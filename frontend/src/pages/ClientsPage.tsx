@@ -162,12 +162,20 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                 <th className="th">Ответственный</th>
                 <th className="th">Телефон</th>
                 <th className="th text-center">Клиентов</th>
-                <th className="th">FinKoper до</th>
-                <th className="th">Оплата FinKoper</th>
-                <th className="th">WhatsApp</th>
-                <th className="th">Включён</th>
-                <th className="th">WhatsApp до</th>
-                <th className="th">Оплата WhatsApp</th>
+                <th className="th border-l border-blue-200 bg-blue-100/80 text-blue-900">
+                  FinKoper до
+                </th>
+                <th className="th border-r border-blue-200 bg-blue-100/80 text-blue-900">
+                  Оплата FinKoper
+                </th>
+                <th className="th border-l border-emerald-200 bg-emerald-100/80 text-emerald-900">
+                  WhatsApp
+                </th>
+                <th className="th bg-emerald-100/80 text-emerald-900">Включён</th>
+                <th className="th bg-emerald-100/80 text-emerald-900">WhatsApp до</th>
+                <th className="th border-r border-emerald-200 bg-emerald-100/80 text-emerald-900">
+                  Оплата WhatsApp
+                </th>
                 <th className="th sticky right-0 z-20">Действия</th>
               </tr>
             </thead>
@@ -192,13 +200,13 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                       {c.count ?? "—"}
                     </span>
                   </td>
-                  <td className="td font-medium">
+                  <td className="td border-l border-blue-100 bg-blue-50/60 font-medium group-hover:bg-blue-100/60">
                     {isoDate(c.finKoperExpires)}
                   </td>
-                  <td className="td">
+                  <td className="td border-r border-blue-100 bg-blue-50/60 group-hover:bg-blue-100/60">
                     <Badge status={c.finKoperStatus} />
                   </td>
-                  <td className="td">
+                  <td className="td border-l border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
                     <span
                       className={cx(
                         "rounded-full px-2 py-1 text-xs font-semibold",
@@ -210,11 +218,13 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                       {c.whatsAppEnabled ? "Включён" : "Выключен"}
                     </span>
                   </td>
-                  <td className="td">{isoDate(c.whatsAppEnabledAt)}</td>
-                  <td className="td font-medium">
+                  <td className="td bg-emerald-50/60 group-hover:bg-emerald-100/60">
+                    {isoDate(c.whatsAppEnabledAt)}
+                  </td>
+                  <td className="td bg-emerald-50/60 font-medium group-hover:bg-emerald-100/60">
                     {isoDate(c.whatsAppExpires)}
                   </td>
-                  <td className="td">
+                  <td className="td border-r border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
                     {c.whatsAppEnabled ? (
                       <Badge status={c.whatsAppStatus} />
                     ) : (
