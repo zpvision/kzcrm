@@ -1245,7 +1245,66 @@ function PaymentHistoryModal({
           {error}
         </div>
       ) : (
-        <Timeline items={items} />
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <table className="w-full min-w-[760px]">
+            <thead>
+              <tr>
+                <th className="th">Дата</th>
+                <th className="th">Операция</th>
+                <th className="th">Период</th>
+                <th className="th">Сумма</th>
+                <th className="th">Сотрудник</th>
+                <th className="th">Состояние</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr
+                  key={`${item.kind}-${item.id}`}
+                  className="hover:bg-slate-50"
+                >
+                  <td className="td text-sm">
+                    {new Date(item.date).toLocaleString("ru-RU")}
+                  </td>
+                  <td className="td font-semibold">
+                    {item.kind === "payment" ? "Оплата" : "Продление"}
+                  </td>
+                  <td className="td">
+                    <div>{item.period}</div>
+                    {item.comment && (
+                      <div className="mt-1 max-w-64 truncate text-xs text-slate-400">
+                        {item.comment}
+                      </div>
+                    )}
+                  </td>
+                  <td className="td font-medium">
+                    {item.amount != null
+                      ? `${item.amount.toLocaleString("ru-RU")} ${item.currency || "KZT"}`
+                      : "—"}
+                  </td>
+                  <td className="td text-slate-600">{item.user}</td>
+                  <td className="td">
+                    <span
+                      className={cx(
+                        "rounded-full px-2.5 py-1 text-xs font-semibold",
+                        item.state === "cancelled"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-emerald-50 text-emerald-700",
+                      )}
+                    >
+                      {item.state === "cancelled" ? "Отменено" : "Активно"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!items.length && (
+            <div className="py-12 text-center text-slate-400">
+              Операций пока нет
+            </div>
+          )}
+        </div>
       )}
     </Modal>
   );
