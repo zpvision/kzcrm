@@ -14,7 +14,7 @@ func (s *Server) clientTimeline(w http.ResponseWriter, r *http.Request) {
 	}
 	rows, err := s.db.Query(r.Context(), `SELECT kind,id,service,event_date,period,months_count,amount,currency,state,user_name,comment,payment_id FROM (
 	 SELECT 'payment' kind,p.id::text,p.service,p.created_at event_date,to_char(p.billing_month,'YYYY-MM')||' · '||p.months_count||' мес.' period,p.months_count,p.amount,p.currency::text,p.state::text,u.display_name user_name,p.comment,NULL::text payment_id FROM payments p JOIN users u ON u.id=p.created_by WHERE p.client_id=$1
-	 UNION ALL SELECT 'renewal',r.id::text,r.service,r.created_at,to_char(r.previous_expires_at,'DD.MM.YYYY')||' → '||to_char(r.new_expires_at,'DD.MM.YYYY'),r.months_count,NULL,NULL,r.state::text,u.display_name,r.comment,r.payment_id::text FROM renewals r JOIN users u ON u.id=r.created_by WHERE r.client_id=$1) x ORDER BY event_date DESC`, id)
+	 UNION ALL SELECT 'renewal',r.id::text,r.service,r.created_at,COALESCE(to_char(r.previous_expires_at,'DD.MM.YYYY'),'—')||' → '||to_char(r.new_expires_at,'DD.MM.YYYY'),r.months_count,NULL,NULL,r.state::text,u.display_name,r.comment,r.payment_id::text FROM renewals r JOIN users u ON u.id=r.created_by WHERE r.client_id=$1) x ORDER BY event_date DESC`, id)
 	if err != nil {
 		dbProblem(w, err)
 		return
