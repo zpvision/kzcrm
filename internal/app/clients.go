@@ -45,8 +45,8 @@ type clientRow struct {
 
 const clientSelect = `SELECT c.id,c.company_name,c.tax_id,c.email,c.contact_name,c.phone,c.comment,mc.count,
  sf.expires_at,COALESCE(sw.enabled,false),sw.enabled_at,sw.expires_at,
- CASE WHEN pf.id IS NULL THEN 'unpaid' WHEN sf.expires_at IS NULL OR sf.expires_at < $1::date THEN 'pending' ELSE 'completed' END,
- CASE WHEN pw.id IS NULL THEN 'unpaid' WHEN sw.expires_at IS NULL OR sw.expires_at < $1::date THEN 'pending' ELSE 'completed' END,c.version,c.archived_at
+ CASE WHEN sf.expires_at >= $1::date THEN 'completed' WHEN pf.id IS NOT NULL THEN 'pending' ELSE 'unpaid' END,
+ CASE WHEN sw.expires_at >= $1::date THEN 'completed' WHEN pw.id IS NOT NULL THEN 'pending' ELSE 'unpaid' END,c.version,c.archived_at
  FROM clients c
  LEFT JOIN monthly_client_counts mc ON mc.client_id=c.id AND mc.month=$1
  LEFT JOIN subscriptions sf ON sf.client_id=c.id AND sf.service='finkoper'
