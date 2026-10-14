@@ -167,7 +167,7 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
           <MonthPicker month={month} onChange={setMonth} />
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1250px]">
+          <table className="w-full min-w-[1150px]">
             <thead>
               <tr>
                 <th className="th sticky left-0 z-20 min-w-60">Компания</th>
@@ -182,7 +182,6 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                 <th className="th border-l border-emerald-200 bg-emerald-100/80 text-emerald-900">
                   WhatsApp
                 </th>
-                <th className="th bg-emerald-100/80 text-emerald-900">Включён</th>
                 <th className="th bg-emerald-100 text-emerald-900">WhatsApp до</th>
                 <th className="th border-r border-emerald-200 bg-emerald-100/80 text-emerald-900">
                   Оплата WhatsApp
@@ -244,9 +243,6 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                     >
                       {c.whatsAppEnabled ? "Включён" : "Выключен"}
                     </span>
-                  </td>
-                  <td className="td bg-emerald-50/60 group-hover:bg-emerald-100/60">
-                    {isoDate(c.whatsAppEnabledAt)}
                   </td>
                   <td className="td bg-emerald-50 font-medium group-hover:bg-emerald-100">
                     {isoDate(c.whatsAppExpires)}
@@ -1031,6 +1027,7 @@ function ClientDrawer({
               />
               <ServiceCard
                 title="WhatsApp"
+                enabledAt={initial.whatsAppEnabledAt}
                 expires={initial.whatsAppExpires}
                 status={initial.whatsAppStatus}
                 disabled={!initial.whatsAppEnabled}
@@ -1077,12 +1074,14 @@ function Info({ label, value }: { label: string; value?: string }) {
 }
 function ServiceCard({
   title,
+  enabledAt,
   expires,
   status,
   disabled,
   onRenew,
 }: {
   title: string;
+  enabledAt?: string;
   expires?: string;
   status: Status;
   disabled?: boolean;
@@ -1093,6 +1092,11 @@ function ServiceCard({
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-bold">{title}</h3>
+          {enabledAt && (
+            <div className="mt-2 text-sm text-slate-500">
+              Включён: <b className="text-slate-700">{isoDate(enabledAt)}</b>
+            </div>
+          )}
           <div className="mt-2 text-sm text-slate-500">Действует до</div>
           <div className="text-lg font-bold">
             {disabled ? "Интеграция выключена" : isoDate(expires)}
