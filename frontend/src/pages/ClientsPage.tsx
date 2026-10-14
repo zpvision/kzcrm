@@ -645,19 +645,42 @@ function PaymentModal({
         <div className="font-semibold">{client.companyName}</div>
       </div>
       <form onSubmit={submit} className="space-y-4">
-        <label>
+        <div>
           <span className="label">Услуга</span>
-          <select
-            className="field"
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-          >
-            <option value="finkoper">FinKoper</option>
-            {client.whatsAppEnabled && (
-              <option value="whatsapp">WhatsApp</option>
+          <div
+            className={cx(
+              "grid gap-2 rounded-xl bg-slate-100 p-1",
+              client.whatsAppEnabled ? "grid-cols-2" : "grid-cols-1",
             )}
-          </select>
-        </label>
+          >
+            <button
+              type="button"
+              onClick={() => setService("finkoper")}
+              className={cx(
+                "h-10 rounded-lg font-semibold transition",
+                service === "finkoper"
+                  ? "bg-white text-brand-700 shadow-sm ring-1 ring-brand-200"
+                  : "text-slate-500 hover:text-slate-800",
+              )}
+            >
+              FinKoper
+            </button>
+            {client.whatsAppEnabled && (
+              <button
+                type="button"
+                onClick={() => setService("whatsapp")}
+                className={cx(
+                  "h-10 rounded-lg font-semibold transition",
+                  service === "whatsapp"
+                    ? "bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-200"
+                    : "text-slate-500 hover:text-slate-800",
+                )}
+              >
+                WhatsApp
+              </button>
+            )}
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Дата оплаты *" type="date" value={date} set={setDate} />
           <label>
