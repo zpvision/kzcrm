@@ -112,7 +112,7 @@ func (s *Server) cancelPayment(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = tx.Exec(r.Context(), `UPDATE payments SET state='cancelled',cancellation_reason=$2,cancelled_at=now(),cancelled_by=$3 WHERE id=$1`, id, in.Reason, u.ID)
 	if err == nil {
-		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'payment.cancelled','payment',$3,jsonb_build_object('reason',$4))`, clientID, u.ID, id.String(), in.Reason)
+		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'payment.cancelled','payment',$3,jsonb_build_object('reason',$4::text))`, clientID, u.ID, id.String(), in.Reason)
 	}
 	if err != nil {
 		dbProblem(w, err)
@@ -251,7 +251,7 @@ func (s *Server) cancelRenewal(w http.ResponseWriter, r *http.Request) {
 		_, err = tx.Exec(r.Context(), `UPDATE subscriptions SET expires_at=$2,version=version+1,updated_at=now() WHERE id=$1`, subID, previous)
 	}
 	if err == nil {
-		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'renewal.cancelled','renewal',$3,jsonb_build_object('reason',$4))`, clientID, u.ID, id.String(), in.Reason)
+		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'renewal.cancelled','renewal',$3,jsonb_build_object('reason',$4::text))`, clientID, u.ID, id.String(), in.Reason)
 	}
 	if err != nil {
 		dbProblem(w, err)

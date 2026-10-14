@@ -110,13 +110,16 @@ func (s *Server) saveCount(w http.ResponseWriter, r *http.Request) {
 		if confirmed {
 			action = "count.corrected"
 		}
-		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,old_values,new_values) VALUES($1,$2,$3,'monthly_client_count',$4,jsonb_build_object('count',$5),jsonb_build_object('count',$6,'month',$7))`, clientID, u.ID, action, clientID.String()+":"+month.Format("2006-01"), old, in.Count, month)
+		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,old_values,new_values) VALUES($1,$2,$3,'monthly_client_count',$4,jsonb_build_object('count',$5::integer),jsonb_build_object('count',$6::integer,'month',$7::date))`, clientID, u.ID, action, clientID.String()+":"+month.Format("2006-01"), old, in.Count, month)
 	}
 	if err != nil {
 		dbProblem(w, err)
 		return
 	}
-	_ = tx.Commit(r.Context())
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
 	respond(w, 200, map[string]any{"ok": true})
 }
 
