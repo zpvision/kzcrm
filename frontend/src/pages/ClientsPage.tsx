@@ -172,7 +172,7 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                   WhatsApp
                 </th>
                 <th className="th bg-emerald-100/80 text-emerald-900">Включён</th>
-                <th className="th bg-emerald-100/80 text-emerald-900">WhatsApp до</th>
+                <th className="th bg-emerald-100 text-emerald-900">WhatsApp до</th>
                 <th className="th border-r border-emerald-200 bg-emerald-100/80 text-emerald-900">
                   Оплата WhatsApp
                 </th>
@@ -221,7 +221,7 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                   <td className="td bg-emerald-50/60 group-hover:bg-emerald-100/60">
                     {isoDate(c.whatsAppEnabledAt)}
                   </td>
-                  <td className="td bg-emerald-50/60 font-medium group-hover:bg-emerald-100/60">
+                  <td className="td bg-emerald-50 font-medium group-hover:bg-emerald-100">
                     {isoDate(c.whatsAppExpires)}
                   </td>
                   <td className="td border-r border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
