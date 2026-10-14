@@ -220,10 +220,10 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                     {isoDate(c.finKoperExpires)}
                   </td>
                   <td className="group/finpay td border-r border-blue-100 bg-blue-50/60 group-hover:bg-blue-100/60">
-                    <div className="flex items-center gap-2">
+                    <div className="relative min-h-[52px]">
                       <Badge status={c.finKoperStatus} />
                       <button
-                        className="btn-secondary !h-8 whitespace-nowrap !px-3 text-xs opacity-0 transition-opacity group-hover/finpay:opacity-100"
+                        className="btn-secondary absolute left-0 top-7 z-10 !h-8 whitespace-nowrap !px-3 text-xs opacity-0 shadow-sm transition-opacity group-hover/finpay:opacity-100"
                         onClick={() =>
                           setRenewal({ client: c, service: "finkoper" })
                         }
@@ -253,10 +253,10 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                   </td>
                   <td className="group/wapay td border-r border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
                     {c.whatsAppEnabled ? (
-                      <div className="flex items-center gap-2">
+                      <div className="relative min-h-[52px]">
                         <Badge status={c.whatsAppStatus} />
                         <button
-                          className="btn-secondary !h-8 whitespace-nowrap !px-3 text-xs opacity-0 transition-opacity group-hover/wapay:opacity-100"
+                          className="btn-secondary absolute left-0 top-7 z-10 !h-8 whitespace-nowrap !px-3 text-xs opacity-0 shadow-sm transition-opacity group-hover/wapay:opacity-100"
                           onClick={() =>
                             setRenewal({ client: c, service: "whatsapp" })
                           }
