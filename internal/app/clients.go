@@ -124,7 +124,7 @@ func (s *Server) createClient(w http.ResponseWriter, r *http.Request) {
 	var id uuid.UUID
 	err = tx.QueryRow(r.Context(), `INSERT INTO clients(company_name,tax_id,email,contact_name,phone,comment,created_by,updated_by) VALUES($1,NULLIF($2,''),lower($3),NULLIF($4,''),NULLIF($5,''),NULLIF($6,''),$7,$7) RETURNING id`, strings.TrimSpace(in.CompanyName), in.TaxID, strings.TrimSpace(in.Email), in.ContactName, in.Phone, in.Comment, u.ID).Scan(&id)
 	if err == nil {
-		_, err = tx.Exec(r.Context(), `INSERT INTO subscriptions(client_id,service,enabled,expires_at) VALUES($1,'finkoper',true,$2),($1,'whatsapp',$3,$4,$5)`, id, dateValue(in.FinKoperExpires), in.WhatsAppEnabled, dateValue(in.WhatsAppEnabledAt), dateValue(in.WhatsAppExpires))
+		_, err = tx.Exec(r.Context(), `INSERT INTO subscriptions(client_id,service,enabled,enabled_at,expires_at) VALUES($1,'finkoper',true,NULL,$2),($1,'whatsapp',$3,$4,$5)`, id, dateValue(in.FinKoperExpires), in.WhatsAppEnabled, dateValue(in.WhatsAppEnabledAt), dateValue(in.WhatsAppExpires))
 	}
 	if err == nil {
 		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'client.created','client',$1,$3)`, id, u.ID, in)

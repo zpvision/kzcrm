@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 
@@ -28,6 +29,7 @@ func problem(w http.ResponseWriter, status int, message string) {
 	respond(w, status, map[string]any{"error": message})
 }
 func dbProblem(w http.ResponseWriter, err error) {
+	log.Printf("database error: %v", err)
 	if errors.Is(err, pgx.ErrNoRows) {
 		problem(w, 404, "Запись не найдена")
 	} else if strings.Contains(err.Error(), "duplicate key") {
