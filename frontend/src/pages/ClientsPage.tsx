@@ -153,14 +153,12 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
           <MonthPicker month={month} onChange={setMonth} />
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1750px]">
+          <table className="w-full min-w-[1450px]">
             <thead>
               <tr>
                 <th className="th sticky left-0 z-20 min-w-60">Компания</th>
-                <th className="th">ИИН / БИН</th>
                 <th className="th">Почта / логин</th>
                 <th className="th">Ответственный</th>
-                <th className="th">Телефон</th>
                 <th className="th text-center">Клиентов</th>
                 <th className="th border-l border-blue-200 bg-blue-100/80 text-blue-900">
                   FinKoper до
@@ -185,16 +183,19 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                   <td className="td sticky left-0 z-10 bg-white group-hover:bg-slate-50">
                     <button
                       onClick={() => setDrawer(c)}
-                      className="flex items-center gap-2 font-semibold text-brand-700 hover:underline"
+                      className="text-left hover:underline"
                     >
-                      {c.companyName}
-                      <ChevronRight size={15} />
+                      <span className="flex items-center gap-2 font-semibold text-brand-700">
+                        {c.companyName}
+                        <ChevronRight size={15} />
+                      </span>
+                      <span className="mt-1 block text-xs font-normal text-slate-400">
+                        ИИН / БИН: {c.taxId || "—"}
+                      </span>
                     </button>
                   </td>
-                  <td className="td text-slate-600">{c.taxId || "—"}</td>
                   <td className="td">{c.email}</td>
                   <td className="td">{c.contactName || "—"}</td>
-                  <td className="td">{c.phone || "—"}</td>
                   <td className="td text-center">
                     <span className="rounded-lg bg-slate-100 px-2.5 py-1 font-semibold">
                       {c.count ?? "—"}
