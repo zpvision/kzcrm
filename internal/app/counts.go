@@ -180,12 +180,15 @@ func (s *Server) confirmCounts(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = tx.Exec(r.Context(), `INSERT INTO monthly_confirmations(month,confirmed_by) VALUES($1,$2) ON CONFLICT(month) DO UPDATE SET confirmed_by=excluded.confirmed_by,confirmed_at=now(),revision=monthly_confirmations.revision+1`, month, u.ID)
 	if err == nil {
-		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(user_id,action,entity_type,entity_id,new_values) VALUES($1,'month.confirmed','monthly_confirmation',$2,jsonb_build_object('month',$2))`, u.ID, in.Month)
+		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(user_id,action,entity_type,entity_id,new_values) VALUES($1,'month.confirmed','monthly_confirmation',$2,jsonb_build_object('month',$3::text))`, u.ID, in.Month, in.Month)
 	}
 	if err != nil {
 		dbProblem(w, err)
 		return
 	}
-	_ = tx.Commit(r.Context())
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
 	respond(w, 200, map[string]any{"ok": true})
 }
