@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { api } from "../api";
 import type { Client, Status } from "../types";
-import { cx, isoDate, Modal, MonthPicker } from "../main";
+import { cx, isoDate, Modal, MonthPicker, monthTitle, shiftMonth } from "../main";
 
 const statusMeta: Record<Status, [string, string]> = {
   unpaid: ["Не оплачено", "bg-red-50 text-red-700 ring-red-100"],
@@ -600,6 +600,14 @@ function PaymentModal({
   const [service, setService] = useState(initial || "finkoper");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [billing, setBilling] = useState(month);
+  const billingMonths = useMemo(
+    () =>
+      Array.from({ length: 85 }, (_, index) => {
+        const value = shiftMonth(month, index - 24);
+        return { value, label: monthTitle(value) };
+      }),
+    [month],
+  );
   const [months, setMonths] = useState(1);
   const [amount, setAmount] = useState("");
   const [comment, setComment] = useState("");
@@ -654,13 +662,18 @@ function PaymentModal({
           <Field label="Дата оплаты *" type="date" value={date} set={setDate} />
           <label>
             <span className="label">Расчётный месяц</span>
-            <input
+            <select
               className="field"
-              type="month"
               value={billing}
               onChange={(e) => setBilling(e.target.value)}
               required
-            />
+            >
+              {billingMonths.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div>
