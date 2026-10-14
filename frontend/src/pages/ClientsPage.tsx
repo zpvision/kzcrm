@@ -167,11 +167,10 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
           <MonthPicker month={month} onChange={setMonth} />
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1450px]">
+          <table className="w-full min-w-[1250px]">
             <thead>
               <tr>
                 <th className="th sticky left-0 z-20 min-w-60">Компания</th>
-                <th className="th">Почта / логин</th>
                 <th className="th">Ответственный</th>
                 <th className="th text-center">Клиентов</th>
                 <th className="th border-l border-blue-200 bg-blue-100/80 text-blue-900">
@@ -206,9 +205,11 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                       <span className="mt-1 block text-xs font-normal text-slate-400">
                         ИИН / БИН: {c.taxId || "—"}
                       </span>
+                      <span className="mt-0.5 block text-xs font-normal text-slate-500">
+                        {c.email}
+                      </span>
                     </button>
                   </td>
-                  <td className="td">{c.email}</td>
                   <td className="td">{c.contactName || "—"}</td>
                   <td className="td text-center">
                     <span className="rounded-lg bg-slate-100 px-2.5 py-1 font-semibold">
