@@ -3,6 +3,7 @@ import {
   Archive,
   ChevronRight,
   CircleDollarSign,
+  History,
   MessageCircle,
   MoreHorizontal,
   Plus,
@@ -12,7 +13,14 @@ import {
 } from "lucide-react";
 import { api } from "../api";
 import type { Client, Status } from "../types";
-import { cx, isoDate, Modal, MonthPicker, monthTitle, shiftMonth } from "../main";
+import {
+  cx,
+  isoDate,
+  Modal,
+  MonthPicker,
+  monthTitle,
+  shiftMonth,
+} from "../main";
 
 const statusMeta: Record<Status, [string, string]> = {
   unpaid: ["Не оплачено", "bg-red-50 text-red-700 ring-red-100"],
@@ -58,6 +66,10 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
     service: "finkoper" | "whatsapp";
   } | null>(null);
   const [drawer, setDrawer] = useState<Client | null>(null);
+  const [history, setHistory] = useState<{
+    client: Client;
+    service: "finkoper" | "whatsapp";
+  } | null>(null);
   const load = useCallback(async () => {
     setBusy(true);
     try {
@@ -182,7 +194,9 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                 <th className="th border-l border-emerald-200 bg-emerald-100/80 text-emerald-900">
                   WhatsApp
                 </th>
-                <th className="th bg-emerald-100 text-emerald-900">WhatsApp до</th>
+                <th className="th bg-emerald-100 text-emerald-900">
+                  WhatsApp до
+                </th>
                 <th className="th border-r border-emerald-200 bg-emerald-100/80 text-emerald-900">
                   Оплата WhatsApp
                 </th>
@@ -222,6 +236,17 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                     <div className="relative min-h-[52px]">
                       <Badge status={c.finKoperStatus} />
                       <button
+                        type="button"
+                        title="История оплат и продлений FinKoper"
+                        aria-label="История оплат и продлений FinKoper"
+                        className="absolute right-0 top-0 inline-flex h-7 w-7 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-200/70"
+                        onClick={() =>
+                          setHistory({ client: c, service: "finkoper" })
+                        }
+                      >
+                        <History size={15} />
+                      </button>
+                      <button
                         className="btn-secondary absolute left-0 top-7 z-10 !h-8 whitespace-nowrap !px-3 text-xs opacity-0 shadow-sm transition-opacity group-hover/finpay:opacity-100"
                         onClick={() =>
                           setRenewal({ client: c, service: "finkoper" })
@@ -248,22 +273,35 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                     {isoDate(c.whatsAppExpires)}
                   </td>
                   <td className="group/wapay td border-r border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
-                    {c.whatsAppEnabled ? (
-                      <div className="relative min-h-[52px]">
-                        <Badge status={c.whatsAppStatus} />
-                        <button
-                          className="btn-secondary absolute left-0 top-7 z-10 !h-8 whitespace-nowrap !px-3 text-xs opacity-0 shadow-sm transition-opacity group-hover/wapay:opacity-100"
-                          onClick={() =>
-                            setRenewal({ client: c, service: "whatsapp" })
-                          }
-                        >
-                          <RefreshCw size={14} />
-                          Продлить WhatsApp
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-slate-400">—</span>
-                    )}
+                    <div className="relative min-h-[52px]">
+                      <button
+                        type="button"
+                        title="История оплат и продлений WhatsApp"
+                        aria-label="История оплат и продлений WhatsApp"
+                        className="absolute right-0 top-0 inline-flex h-7 w-7 items-center justify-center rounded-lg text-emerald-700 hover:bg-emerald-200/70"
+                        onClick={() =>
+                          setHistory({ client: c, service: "whatsapp" })
+                        }
+                      >
+                        <History size={15} />
+                      </button>
+                      {c.whatsAppEnabled ? (
+                        <>
+                          <Badge status={c.whatsAppStatus} />
+                          <button
+                            className="btn-secondary absolute left-0 top-7 z-10 !h-8 whitespace-nowrap !px-3 text-xs opacity-0 shadow-sm transition-opacity group-hover/wapay:opacity-100"
+                            onClick={() =>
+                              setRenewal({ client: c, service: "whatsapp" })
+                            }
+                          >
+                            <RefreshCw size={14} />
+                            Продлить WhatsApp
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </div>
                   </td>
                   <td className="td sticky right-0 bg-white group-hover:bg-slate-50">
                     <div className="flex items-center gap-2">
@@ -342,6 +380,9 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
           onClose={() => setDrawer(null)}
           onRenew={(service) => setRenewal({ client: drawer, service })}
         />
+      )}
+      {history && (
+        <PaymentHistoryModal {...history} onClose={() => setHistory(null)} />
       )}
     </main>
   );
@@ -1163,5 +1204,49 @@ function Timeline({ items }: { items: EventItem[] }) {
         <div className="py-12 text-center text-slate-400">Событий пока нет</div>
       )}
     </div>
+  );
+}
+
+function PaymentHistoryModal({
+  client,
+  service,
+  onClose,
+}: {
+  client: Client;
+  service: "finkoper" | "whatsapp";
+  onClose: () => void;
+}) {
+  const [items, setItems] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    setLoading(true);
+    api<EventItem[]>(`/clients/${client.id}/timeline`)
+      .then((events) =>
+        setItems(events.filter((event) => event.service === service)),
+      )
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [client.id, service]);
+  return (
+    <Modal
+      title={`История ${service === "finkoper" ? "FinKoper" : "WhatsApp"}`}
+      onClose={onClose}
+      wide
+    >
+      <div className="mb-4 rounded-xl bg-slate-50 p-3">
+        <div className="font-semibold">{client.companyName}</div>
+        <div className="mt-1 text-xs text-slate-500">Оплаты и продления</div>
+      </div>
+      {loading ? (
+        <div className="py-12 text-center text-slate-400">Загрузка…</div>
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : (
+        <Timeline items={items} />
+      )}
+    </Modal>
   );
 }
