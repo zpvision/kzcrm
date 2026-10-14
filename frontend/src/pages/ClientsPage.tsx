@@ -838,11 +838,15 @@ function RenewalModal({
   function choose(n: number) {
     setMonths(n);
     setNewDate(addMonths(current, n));
+    setPaymentId(payments.find((payment) => payment.months === n)?.id || "");
   }
   function choosePayment(id: string) {
     setPaymentId(id);
     const p = payments.find((x) => x.id === id);
-    if (p) choose(p.months);
+    if (p) {
+      setMonths(p.months);
+      setNewDate(addMonths(current, p.months));
+    }
   }
   async function submit(e: React.FormEvent) {
     e.preventDefault();

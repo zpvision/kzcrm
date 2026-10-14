@@ -51,10 +51,10 @@ const clientSelect = `SELECT c.id,c.company_name,c.tax_id,c.email,c.contact_name
  LEFT JOIN monthly_client_counts mc ON mc.client_id=c.id AND mc.month=$1
  LEFT JOIN subscriptions sf ON sf.client_id=c.id AND sf.service='finkoper'
  LEFT JOIN subscriptions sw ON sw.client_id=c.id AND sw.service='whatsapp'
- LEFT JOIN LATERAL (SELECT p.id FROM payments p JOIN payment_allocations pa ON pa.payment_id=p.id WHERE p.client_id=c.id AND p.service='finkoper' AND p.state='active' AND pa.billing_month=$1 ORDER BY p.created_at DESC LIMIT 1) pf ON true
- LEFT JOIN LATERAL (SELECT id FROM renewals WHERE payment_id=pf.id AND state='active' LIMIT 1) rf ON true
- LEFT JOIN LATERAL (SELECT p.id FROM payments p JOIN payment_allocations pa ON pa.payment_id=p.id WHERE p.client_id=c.id AND p.service='whatsapp' AND p.state='active' AND pa.billing_month=$1 ORDER BY p.created_at DESC LIMIT 1) pw ON true
- LEFT JOIN LATERAL (SELECT id FROM renewals WHERE payment_id=pw.id AND state='active' LIMIT 1) rw ON true`
+ LEFT JOIN LATERAL (SELECT p.id,p.created_at,p.months_count FROM payments p JOIN payment_allocations pa ON pa.payment_id=p.id WHERE p.client_id=c.id AND p.service='finkoper' AND p.state='active' AND pa.billing_month=$1 ORDER BY p.created_at DESC LIMIT 1) pf ON true
+ LEFT JOIN LATERAL (SELECT id FROM renewals WHERE state='active' AND service='finkoper' AND client_id=c.id AND (payment_id=pf.id OR (payment_id IS NULL AND months_count=pf.months_count AND created_at>=pf.created_at)) ORDER BY created_at DESC LIMIT 1) rf ON true
+ LEFT JOIN LATERAL (SELECT p.id,p.created_at,p.months_count FROM payments p JOIN payment_allocations pa ON pa.payment_id=p.id WHERE p.client_id=c.id AND p.service='whatsapp' AND p.state='active' AND pa.billing_month=$1 ORDER BY p.created_at DESC LIMIT 1) pw ON true
+ LEFT JOIN LATERAL (SELECT id FROM renewals WHERE state='active' AND service='whatsapp' AND client_id=c.id AND (payment_id=pw.id OR (payment_id IS NULL AND months_count=pw.months_count AND created_at>=pw.created_at)) ORDER BY created_at DESC LIMIT 1) rw ON true`
 
 func validMonth(v string) (time.Time, error) { return time.Parse("2006-01-02", v+"-01") }
 func scanClient(row pgx.Row) (clientRow, error) {
