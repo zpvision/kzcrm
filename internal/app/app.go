@@ -64,7 +64,7 @@ func Run(ctx context.Context) error {
 func (s *Server) routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/auth/login", s.login)
-	mux.Handle("/api/", s.authenticated(s.apiRoutes()))
+	mux.Handle("/api/", http.StripPrefix("/api", s.authenticated(s.apiRoutes())))
 	dist, _ := fs.Sub(webFiles, "web")
 	files := http.FileServer(http.FS(dist))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
