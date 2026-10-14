@@ -127,7 +127,7 @@ func (s *Server) createClient(w http.ResponseWriter, r *http.Request) {
 		_, err = tx.Exec(r.Context(), `INSERT INTO subscriptions(client_id,service,enabled,enabled_at,expires_at) VALUES($1,'finkoper',true,NULL,$2),($1,'whatsapp',$3,$4,$5)`, id, dateValue(in.FinKoperExpires), in.WhatsAppEnabled, dateValue(in.WhatsAppEnabledAt), dateValue(in.WhatsAppExpires))
 	}
 	if err == nil {
-		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'client.created','client',$1::text,$3)`, id, u.ID, in)
+		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,new_values) VALUES($1,$2,'client.created','client',$3,$4)`, id, u.ID, id.String(), in)
 	}
 	if err != nil {
 		dbProblem(w, err)
@@ -192,7 +192,7 @@ func (s *Server) updateClient(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if err == nil {
-		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,old_values,new_values) VALUES($1,$2,'client.updated','client',$1::text,$3,$4)`, id, u.ID, old, in)
+		_, err = tx.Exec(r.Context(), `INSERT INTO audit_logs(client_id,user_id,action,entity_type,entity_id,old_values,new_values) VALUES($1,$2,'client.updated','client',$3,$4,$5)`, id, u.ID, id.String(), old, in)
 	}
 	if err != nil {
 		dbProblem(w, err)
