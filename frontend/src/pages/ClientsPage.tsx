@@ -89,6 +89,8 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
   const pending = items.filter(
     (x) => x.finKoperStatus === "pending" || x.whatsAppStatus === "pending",
   ).length;
+  const paid = items.filter((x) => x.finKoperStatus !== "unpaid").length;
+  const unpaid = items.filter((x) => x.finKoperStatus === "unpaid").length;
   const wa = items.filter((x) => x.whatsAppEnabled).length;
   return (
     <main className="p-4 md:p-6 xl:p-8">
@@ -106,12 +108,24 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
           Добавить нового клиента
         </button>
       </div>
-      <div className="mb-5 grid gap-4 sm:grid-cols-3">
+      <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Stat
           label="Всего клиентов"
           value={items.length}
           icon={<Users />}
           tone="blue"
+        />
+        <Stat
+          label="Оплачено клиентов"
+          value={paid}
+          icon={<CircleDollarSign />}
+          tone="green"
+        />
+        <Stat
+          label="Не оплачено клиентов"
+          value={unpaid}
+          icon={<CircleDollarSign />}
+          tone="red"
         />
         <Stat
           label="Ожидают продления"
@@ -348,7 +362,9 @@ function Stat({
       ? "bg-blue-50 text-blue-600"
       : tone === "amber"
         ? "bg-amber-50 text-amber-600"
-        : "bg-emerald-50 text-emerald-600";
+        : tone === "red"
+          ? "bg-red-50 text-red-600"
+          : "bg-emerald-50 text-emerald-600";
   return (
     <div className="card flex items-center gap-4 p-5">
       <div
