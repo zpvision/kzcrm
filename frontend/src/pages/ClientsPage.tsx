@@ -737,6 +737,22 @@ type EventItem = {
   comment?: string;
   paymentId?: string;
 };
+const auditActionLabels: Record<string, string> = {
+  "client.created": "Клиент создан",
+  "client.updated": "Данные клиента изменены",
+  "client.archived": "Клиент архивирован",
+  "payment.created": "Оплата добавлена",
+  "payment.cancelled": "Оплата отменена",
+  "renewal.created": "Продление зафиксировано",
+  "renewal.cancelled": "Продление отменено",
+  "count.updated": "Количество клиентов изменено",
+  "count.corrected": "Количество клиентов скорректировано",
+  "month.confirmed": "Количество за месяц подтверждено",
+};
+function auditActionLabel(value: unknown) {
+  const action = String(value);
+  return auditActionLabels[action] || action;
+}
 function addMonths(value: string, months: number) {
   const d = new Date(value + "T12:00:00");
   const day = d.getDate();
@@ -992,7 +1008,7 @@ function ClientDrawer({
               {audit.map((a, i) => (
                 <div key={i} className="rounded-xl border border-slate-200 p-4">
                   <div className="flex justify-between gap-3">
-                    <b>{String(a.action)}</b>
+                    <b>{auditActionLabel(a.action)}</b>
                     <span className="text-xs text-slate-400">
                       {new Date(String(a.date)).toLocaleString("ru-RU")}
                     </span>
