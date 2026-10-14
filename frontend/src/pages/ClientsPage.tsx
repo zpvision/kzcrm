@@ -219,8 +219,19 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                   <td className="td border-l border-blue-100 bg-blue-50/60 font-medium group-hover:bg-blue-100/60">
                     {isoDate(c.finKoperExpires)}
                   </td>
-                  <td className="td border-r border-blue-100 bg-blue-50/60 group-hover:bg-blue-100/60">
-                    <Badge status={c.finKoperStatus} />
+                  <td className="group/finpay td border-r border-blue-100 bg-blue-50/60 group-hover:bg-blue-100/60">
+                    <div className="flex items-center gap-2">
+                      <Badge status={c.finKoperStatus} />
+                      <button
+                        className="btn-secondary !h-8 whitespace-nowrap !px-3 text-xs opacity-0 transition-opacity group-hover/finpay:opacity-100"
+                        onClick={() =>
+                          setRenewal({ client: c, service: "finkoper" })
+                        }
+                      >
+                        <RefreshCw size={14} />
+                        Продлить FinKoper
+                      </button>
+                    </div>
                   </td>
                   <td className="td border-l border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
                     <span
@@ -240,42 +251,34 @@ export function ClientsPage({ month, setMonth, notify }: Props) {
                   <td className="td bg-emerald-50 font-medium group-hover:bg-emerald-100">
                     {isoDate(c.whatsAppExpires)}
                   </td>
-                  <td className="td border-r border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
+                  <td className="group/wapay td border-r border-emerald-100 bg-emerald-50/60 group-hover:bg-emerald-100/60">
                     {c.whatsAppEnabled ? (
-                      <Badge status={c.whatsAppStatus} />
+                      <div className="flex items-center gap-2">
+                        <Badge status={c.whatsAppStatus} />
+                        <button
+                          className="btn-secondary !h-8 whitespace-nowrap !px-3 text-xs opacity-0 transition-opacity group-hover/wapay:opacity-100"
+                          onClick={() =>
+                            setRenewal({ client: c, service: "whatsapp" })
+                          }
+                        >
+                          <RefreshCw size={14} />
+                          Продлить WhatsApp
+                        </button>
+                      </div>
                     ) : (
                       <span className="text-slate-400">—</span>
                     )}
                   </td>
                   <td className="td sticky right-0 bg-white group-hover:bg-slate-50">
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-2">
                       <button
                         title="Отметить оплату"
-                        className="icon-btn"
+                        className="btn-secondary !h-9 whitespace-nowrap !px-3 text-xs"
                         onClick={() => setPayment({ client: c })}
                       >
-                        <CircleDollarSign size={17} />
+                        <CircleDollarSign size={15} />
+                        Отметить оплату
                       </button>
-                      <button
-                        title="Продлить FinKoper"
-                        className="icon-btn"
-                        onClick={() =>
-                          setRenewal({ client: c, service: "finkoper" })
-                        }
-                      >
-                        <RefreshCw size={17} />
-                      </button>
-                      {c.whatsAppEnabled && (
-                        <button
-                          title="Продлить WhatsApp"
-                          className="icon-btn"
-                          onClick={() =>
-                            setRenewal({ client: c, service: "whatsapp" })
-                          }
-                        >
-                          <MessageCircle size={17} />
-                        </button>
-                      )}
                       <button
                         title="Редактировать"
                         className="icon-btn"
